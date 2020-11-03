@@ -15,11 +15,12 @@ username = ""
 password = ""
 
 def waiting(xpath, driver):
+    # While in Waiting Process. It will wait for 15 Min. 
     im_in = None
     wait_for = 1
     while True:
         try:
-            im_in = driver.find_element_by_xpath(xpath)
+            im_in = driver.find_element_by_xpath(xpath)  # Checking for Conference Window is open / not
             print("I'm in the lecture")
             return im_in
         except:
@@ -70,14 +71,16 @@ def modify_timetable():
 
         conn = sqlite3.connect('timetable.db')
         c = conn.cursor()
-
-        c.execute("INSERT INTO timetable VALUES ('%s', '%s', '%s', '%s', '%s')"%(class_name,start_time,end_time,day,class_link))
+        
+        # Inserting the new schedule into db.
+        c.execute("INSERT INTO timetable VALUES ('%s', '%s', '%s', '%s', '%s')"%(class_name,start_time,end_time,day,class_link))  
         conn.commit()
         conn.close()
         print("Class Added to Database\n")
         ch = int(input("1.Add class\n2.Done\nEntert Choice:"))
 
 def view_timetable():
+    # Helps You to Show a schedule.
     if not(path.exists('timetable.db')):
         print("DB is not created")
         return
@@ -94,6 +97,7 @@ def join_class(class_name, start_time, end_time, class_link):
     opt.add_argument("start-maximized")
     opt.add_argument("--disable-extensions")
     opt.add_argument("--start-maximized")
+    # 1 To allow & 0 To deny
     opt.add_experimental_option("prefs", { \
         "profile.default_content_setting_values.media_stream_mic": 1, 
         "profile.default_content_setting_values.media_stream_camera": 1,
@@ -102,59 +106,47 @@ def join_class(class_name, start_time, end_time, class_link):
     })
     driver=webdriver.Chrome(executable_path='chromedriver.exe',options=opt)
 
-    driver.get('https://stackoverflow.com/users/signup?ssrc=head&returnurl=%2fusers%2fstory%2fcurrent%27')
+    driver.get('https://stackoverflow.com/users/signup?ssrc=head&returnurl=%2fusers%2fstory%2fcurrent%27')  # Stack-Overflow Sign-up Page.
     tm.sleep(3)
-    driver.find_element_by_xpath('//*[@id="openid-buttons"]/button[1]').click()
+    driver.find_element_by_xpath('//*[@id="openid-buttons"]/button[1]').click()     # Clicking Google Sign-up
     driver.find_element_by_xpath('//input[@type="email"]').send_keys(username)
-    driver.find_element_by_xpath('//*[@id="identifierNext"]').click()
+    driver.find_element_by_xpath('//*[@id="identifierNext"]').click()               # Clicking on 'Next' button in username page.
     tm.sleep(3)
-    driver.find_element_by_xpath('//input[@type="password"]').send_keys(password)
-    driver.find_element_by_xpath('//*[@id="passwordNext"]').click()
+    driver.find_element_by_xpath('//input[@type="password"]').send_keys(password)   
+    driver.find_element_by_xpath('//*[@id="passwordNext"]').click()                 # Clicking on 'Next' button in password page.
     tm.sleep(2)
-    driver.get(class_link)
+    driver.get(class_link)  # Opening the class Link
     tm.sleep(5)
-
-    """try:
-        mic_btn = driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[5]/div[3]/div/div/div[2]/div/div[1]/div[1]/div/div[4]/div[1]/div/div/div')
-        cam_btn = driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[5]/div[3]/div/div/div[2]/div/div[1]/div[1]/div/div[4]/div[2]/div/div')
-        entr_btn =driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[5]/div[3]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div/span')
-        exit_xpath = '//*[@id="ow3"]/div[1]/div/div[5]/div[3]/div[9]/div[2]/div[2]/div'
-    except:
-        mic_btn = driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[6]/div[3]/div/div/div[2]/div/div[1]/div[1]/div/div[4]/div[1]/div/div/div')
-        cam_btn = driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[6]/div[3]/div/div/div[2]/div/div[1]/div[1]/div/div[4]/div[2]/div/div')
-        entr_btn =driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[6]/div[3]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div[1]/span')    
-        exit_xpath = '//*[@id="ow3"]/div[1]/div/div[6]/div[3]/div[9]/div[2]/div[2]/div'
-    """
-
+    
     try:
         if driver.find_element_by_xpath('//*[@data-tooltip="Turn off microphone (CTRL + D)"]'):
-            driver.find_element_by_xpath('//*[@data-tooltip="Turn off microphone (CTRL + D)"]').click()
+            driver.find_element_by_xpath('//*[@data-tooltip="Turn off microphone (CTRL + D)"]').click()   # Clicking on microphone button for switch off microphone.
     except:
         print("Microphone was off already")
         
     try:
         if driver.find_element_by_xpath('//*[@data-tooltip="Turn off camera (CTRL + E)"]'):
-            driver.find_element_by_xpath('//*[@data-tooltip="Turn off camera (CTRL + E)"]').click()
-    except:
+            driver.find_element_by_xpath('//*[@data-tooltip="Turn off camera (CTRL + E)"]').click()       # Clicking on camera button for switch off camera.
+    except: 
         print("Camera was off already")
 
 
-    driver.find_element_by_xpath('//*[@class="uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt"]').click()
+    driver.find_element_by_xpath('//*[@class="uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt"]').click()               # Clicking on 'Join' Button.
     im_in = waiting('//*[@id="ow3"]', driver)
     if im_in == None:
         print("there is no lect")
-        attendee_bot.send_msg(class_name = class_name, status="noclass", start_time = start_time, end_time = end_time)
+        attendee_bot.send_msg(class_name = class_name, status="noclass", start_time = start_time, end_time = end_time) # Sending a 'no class' message through webhook.
     else:
-        attendee_bot.send_msg(class_name = class_name, status="joined", start_time = start_time, end_time = end_time)
+        attendee_bot.send_msg(class_name = class_name, status="joined", start_time = start_time, end_time = end_time)  # Sending a 'joined' message through webhook.
         tm.sleep(10)
 
         tmp = "%H:%M"
         class_running_time = datetime.strptime(end_time,tmp) - datetime.strptime(start_time,tmp)
-        tm.sleep(class_running_time.seconds)
+        tm.sleep(class_running_time.seconds)                                # It will sleep for number of seconds, calculated from diffence between start time to end time
         pyautogui.press('enter')    
-        driver.find_element_by_xpath('//*[@data-tooltip="Leave call"]').click()
+        driver.find_element_by_xpath('//*[@data-tooltip="Leave call"]').click()  # Once Class is ended it will click on exit button
         print("Lecture is Over")
-        attendee_bot.send_msg(class_name = class_name, status="left", start_time = start_time, end_time = end_time)
+        attendee_bot.send_msg(class_name = class_name, status="left", start_time = start_time, end_time = end_time) # Sending a 'left' message through a webhook.
         driver.close()
     
 def scheduling():
@@ -193,6 +185,7 @@ def scheduling():
                 schedule.every().sunday.at(start_time).do(join_class, class_name, start_time, end_time, class_link)
                 print("Scheduled Class '%s' on %s at %s"%(class_name,day,start_time))
     while True:
+        # it will stay in loop and checking a schedule.
         schedule.run_pending()
         tm.sleep(1)
               
