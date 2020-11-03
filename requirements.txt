@@ -1,0 +1,6 @@
+Discord-Webhooks==1.0.4
+schedule==0.6.0
+requests==2.21.0
+selenium==3.141.0
+urllib3==1.24.3
+PyAutoGUI==0.9.52
